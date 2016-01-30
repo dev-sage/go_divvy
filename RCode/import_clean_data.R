@@ -48,14 +48,12 @@ divvy_data <- rbind(divvy_q3_07, divvy_q3_08, divvy_q3_09, divvy_q4)
 # Change columns names to be more readable.
 colnames(divvy_data) <- c("trip_id", "start_time", "stop_time", "bike_id", "trip_duration", "from_station_id", 
                           "from_station_name", "to_station_id", "to_station_name", "user_type", "gender", "birth_year")
-
 # Match Trip <- Station
 # Note: I'm sure this isn't a very good way of doing it, but I can't think of anything clever and simple to do instead of it.
 colnames(divvy_stations) <- c("id", "name", "from_lat", "from_lng", "from_dpcap", "from_land")
 divvy_matched <- left_join(divvy_data, divvy_stations, by = c(c("from_station_id" = "id", "from_station_name" = "name")))
 colnames(divvy_stations) <- c("id", "name", "to_lat", "to_lng", "to_dpcap", "to_land")
 divvy_matched <- left_join(divvy_matched, divvy_stations, by = c(c("to_station_id" = "id", "to_station_name" = "name")))
-
 ########################### END JOIN DATA ###############################
 
 
@@ -67,4 +65,6 @@ write.csv(divvy_data, file = "~/Google Drive/Go Divvy/divvy_data.csv", row.names
 system("cp '/Users/sagelane/Google Drive/Go Divvy/divvy_data.csv' '/Users/sagelane/Google Drive/Go Divvy/go_divvy/data/divvy_data_small.csv'")
 system("gzip '/Users/sagelane/Google Drive/Go Divvy/go_divvy/data/divvy_data_small.csv'")
 ########################### END SAVE DATA ###############################
+
+
 
