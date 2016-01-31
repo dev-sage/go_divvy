@@ -54,6 +54,7 @@ colnames(divvy_stations) <- c("id", "name", "from_lat", "from_lng", "from_dpcap"
 divvy_matched <- left_join(divvy_data, divvy_stations, by = c(c("from_station_id" = "id", "from_station_name" = "name")))
 colnames(divvy_stations) <- c("id", "name", "to_lat", "to_lng", "to_dpcap", "to_land")
 divvy_matched <- left_join(divvy_matched, divvy_stations, by = c(c("to_station_id" = "id", "to_station_name" = "name")))
+divvy_final <- divvy_matched
 ########################### END JOIN DATA ###############################
 
 
