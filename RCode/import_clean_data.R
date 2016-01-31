@@ -15,8 +15,8 @@ my_working_dir <- "~/Google Drive/Go Divvy/"
 read_divvy <- function(file_name) {
   data <- read_csv(file_name,
           col_types = cols(trip_id = col_integer(),
-                          starttime = col_date(format = "%m/%d/%Y %H:%M"),
-                          stoptime =  col_date(format = "%m/%d/%Y %H:%M"),
+                          starttime = col_datetime(format = "%m/%d/%Y %H:%M"),
+                          stoptime =  col_datetime(format = "%m/%d/%Y %H:%M"),
                           bikeid = col_integer(),
                           tripduration = col_integer(),
                           from_station_id = col_integer(),
@@ -61,6 +61,8 @@ divvy_final <- divvy_matched
 ############################### SAVE DATA ###############################
 # Save to non-git folder. 
 write.csv(divvy_data, file = "~/Google Drive/Go Divvy/divvy_data.csv", row.names = FALSE)
+# Save RObject
+saveRDS(divvy_final, file = "~/Google Drive/Go Divvy/divvy_data.rda")
 
 # Create compressed data for github upload.
 system("cp '/Users/sagelane/Google Drive/Go Divvy/divvy_data.csv' '/Users/sagelane/Google Drive/Go Divvy/go_divvy/data/divvy_data_small.csv'")

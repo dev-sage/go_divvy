@@ -2,6 +2,7 @@ library(ggplot2)
 library(ggmap)
 library(stats)
 library(dplyr)
+library(lubridate)
 
 # Determine Most Common Route Pairs
 divvy_final <- divvy_final[,c("from_station_id", "to_station_id")]
@@ -45,78 +46,10 @@ write.table(combos_with_lines,
             file = "/Users/sagelane/Google Drive/Go Divvy/go_divvy/data/combo_line.csv",
             row.names = FALSE, sep = ",", col.names = FALSE, append = TRUE)
 
+#######################################################
+# Get numbers of trips by the hour in 24 hour periods #
+#######################################################
+# divvy_final <- read_csv(file = "~/Google Drive/Go Divvy/divvy_data.csv")
+head(divvy_final$start_time)[1]
+divvy_final$start_time[1]
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-map <- get_map("chicago", source = "google", zoom = 12, color = "bw", maptype = "blank")
-# 
-# my_paths <- data.frame()
-# for(i in 1:nrow(combos_with_lines)) {
-#   path <- decodeLine(combos_with_lines$polyline[i])
-#   path$group <- paste0(combos_with_lines$from_station_id[i],
-#                        combos_with_lines$to_station_id[i])
-#   path$alpha <- alpha_scale(combos_with_lines$count[i])
-#   my_paths <- rbind(my_paths, path)
-# }
-# 
-# (max(my_paths$alpha) - min(my_paths$alpha)) / 100
-# 
-# scale_factor <-  1 / 6182 
-# 
-# alpha_scale <- function(num) {
-#   return((num) / 6182)
-# }
-# 
-
-max(my_paths$lon)
-
-paths_clean <- my_paths[my_paths$lon != 18.68812, ]
-
-ggplot(data = paths_clean, aes(x = lon, y = lat, group = group, alpha = alpha * 0.50)) + 
-  geom_path(lwd = 0.25, col = "#1ac6ff") + coord_map(projection = "mercator") +
-  guides(alpha = FALSE) + 
-  theme_void()
-
-
-theme_void <- function(base_size = 12, base_family = "") {
-  theme(
-    # Use only inherited elements and make everything blank
-    line =               element_blank(),
-    text =               element_blank(),
-    plot.margin =        unit(c(0, 0, 0, 0), "lines"),
-    panel.background =   element_rect(fill = "black"),
-    plot.background =    element_rect(fill = "black"),
-    
-    complete = TRUE
-  )
-}
