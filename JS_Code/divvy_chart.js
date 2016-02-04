@@ -1,4 +1,4 @@
-var width = 600, height = 1000;
+var width = window.innerWidth / 2, height = window.innerHeight * 0.75;
 
 var svg = d3.select("#force_layout").append("svg")
 			.attr("width", width)
@@ -17,12 +17,15 @@ d3.csv("data/combo_lines.csv", function(error, data) {
 
 	var edgeScale = d3.scale.linear()
 							.domain([0, 6])
-							.range([0, 20]);
+							.range([0, 225]);
 
+	var nodeScale = d3.scale.linear()
+							.domain([0, d3.max(function(d) { return data.count; })])
+							.range([0, 50]);	
 
 	var force = d3.layout.force()
 				.size([width, height])
-				.charge([-25])
+				.charge([-50])
 				.linkDistance(function(d) { return edgeScale(d.distance)});
 				
 
