@@ -23,6 +23,7 @@ function clear_path(path) {
 	map.removeLayer(path);
 }
 
+var data_g;
 d3.csv("data/combo_lines.csv", function(error, data) {
 	data.forEach(function(row) {
 		row.count = +row.count;
@@ -33,6 +34,8 @@ d3.csv("data/combo_lines.csv", function(error, data) {
 		row.distance = +row.distance;
 		row.time = +row.time;
 	});
+
+	data_g = data;
 
 	var alpha_scale = d3.scale.linear()
 		.domain([0.1, d3.max(data, function(row) { return row.count })])
