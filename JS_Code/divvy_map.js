@@ -3,7 +3,7 @@ var map = L.map("map", {zoomControl: false}).setView([41.891139, -87.626542], 12
 L.tileLayer('https://api.tiles.mapbox.com/v4/{mapid}/{z}/{x}/{y}.png?access_token={accessToken}', {
              attribution: "",
              maxZoom: 15,
-             minZoom: 3,
+             minZoom: 11,
              mapid: 'mapbox.dark',
              accessToken: 'pk.eyJ1IjoiZGV2LXNhZ2UiLCJhIjoiY2lrMW9yMXIwMzlyMHZnbHpwb3RrcnN2cyJ9.1nGy-0e-Xwg-kEyOvy5Isg'
             }).addTo(map);
