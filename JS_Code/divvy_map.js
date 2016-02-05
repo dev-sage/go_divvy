@@ -8,19 +8,21 @@ L.tileLayer('https://api.tiles.mapbox.com/v4/{mapid}/{z}/{x}/{y}.png?access_toke
              accessToken: 'pk.eyJ1IjoiZGV2LXNhZ2UiLCJhIjoiY2lrMW9yMXIwMzlyMHZnbHpwb3RrcnN2cyJ9.1nGy-0e-Xwg-kEyOvy5Isg'
             }).addTo(map);
 
-function draw_route(polyline, alpha, line_num) {
+var path_layer = new L.layerGroup();
+function draw_route(polyline, alpha, path_col, line_size, scatter_line) {
 	var decoded_path = L.Polyline.fromEncoded(polyline);
 	var drawn_path = new L.Polyline(decoded_path.getLatLngs(), {
-		snakingSpeed: 50, snakingPause: 0, color: "#1ac6ff", opacity: alpha, weight: 2.00 });
+		snakingSpeed: 50, snakingPause: 0, color: path_col, opacity: alpha, weight: line_size });
 
 	//path_layer.addLayer(drawn_path);	
 	//map.addLayer(path_layer);
 	drawn_path.addTo(map).snakeIn();
+	if(scatter_line) { path_layer.addLayer(drawn_path); }
 	//drawn_path.addEventListener('snakeend', clear_path(this));
 }
 
-function clear_path(path) {
-	map.removeLayer(path);
+function remove_trip_path(path) {
+	map.removeLayer(path_layer);
 }
 
 var data_g;
@@ -43,7 +45,7 @@ d3.csv("data/combo_lines.csv", function(error, data) {
 
 	data.forEach(function(row) {
 		if(!(row.distance == 0)) {
-			draw_route(row.polyline, alpha_scale(row.count));
+			draw_route(row.polyline, alpha_scale(row.count), "#1ac6ff", 2.00, false);
 		} });
 
 

@@ -47,7 +47,7 @@ combos_with_lines$id <- paste0(combos_with_lines$from_station_id, combos_with_li
 
 test_combo <- combos_with_lines[combos_with_lines$from_station_id != combos_with_lines$to_station_id, ]
 
-write.table(test_combo, 
+write.table(combos_with_lines, 
             file = "/Users/sagelane/Google Drive/Go Divvy/go_divvy/data/combo_lines.csv",
             row.names = FALSE, sep = ",", col.names = TRUE, append = FALSE)
 
