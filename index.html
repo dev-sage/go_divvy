@@ -49,6 +49,14 @@
       stroke: #fff;
     }
 
+    .axis path, 
+    .axis line
+    {
+      fill: none;
+      stroke: #5C6161;
+      shape-rendering: crispEdges;
+    }
+
 
 
   </style>
@@ -58,7 +66,7 @@
   <div id = "map">
     <script src = "JS_Code/divvy_map.js"></script>
   </div>
-  <div id = "force_layout">
+  <div id = "scatter_layout">
     <center><h2> Most Popular Divvy Trips (2015) </h2></center>
     <script src = "JS_Code/divvy_scatter.js"></script>
   </div>
