@@ -30,7 +30,9 @@ read_divvy <- function(file_name) {
 }
 
 ############################### READ DATA ###############################
-# Trip Data
+# Trip Data:
+divvy_q1 <- read_divvy("~/Desktop/divvy_trips/Divvy_Trips_2015-Q1.csv")
+divvy_q2 <- read_divvy("~/Desktop/divvy_trips/Divvy_Trips_2015-Q2.csv")
 divvy_q3_07 <- read_divvy("~/Desktop/divvy_trips/Divvy_Trips_2015_07.csv")
 divvy_q3_08 <- read_divvy("~/Desktop/divvy_trips/Divvy_Trips_2015_08.csv")
 divvy_q3_09 <- read_divvy("~/Desktop/divvy_trips/Divvy_Trips_2015_09.csv")
@@ -43,24 +45,27 @@ divvy_stations <- read_csv("~/Desktop/divvy_trips/divvy_stations_2015.csv")
 
 ############################### JOIN DATA ###############################
 # Concatenate tables
-divvy_data <- rbind(divvy_q3_07, divvy_q3_08, divvy_q3_09, divvy_q4)
+divvy_data <- rbind(divvy_q1, divvy_q2, divvy_q3_07, divvy_q3_08, divvy_q3_09, divvy_q4)
 
 # Change columns names to be more readable.
 colnames(divvy_data) <- c("trip_id", "start_time", "stop_time", "bike_id", "trip_duration", "from_station_id", 
                           "from_station_name", "to_station_id", "to_station_name", "user_type", "gender", "birth_year")
-# Match Trip <- Station
-# Note: I'm sure this isn't a very good way of doing it, but I can't think of anything clever and simple to do instead of it.
+# Left Join ( Trip <- Station )
+# Note: This probably isn't the best way to do so, will revise.
+
+# Renaming stations to avoid confusion on merge.
 colnames(divvy_stations) <- c("id", "name", "from_lat", "from_lng", "from_dpcap", "from_land")
 divvy_matched <- left_join(divvy_data, divvy_stations, by = c(c("from_station_id" = "id", "from_station_name" = "name")))
+# Once again renaming stations to avoid confusion on merge.
 colnames(divvy_stations) <- c("id", "name", "to_lat", "to_lng", "to_dpcap", "to_land")
 divvy_matched <- left_join(divvy_matched, divvy_stations, by = c(c("to_station_id" = "id", "to_station_name" = "name")))
-divvy_final <- divvy_matched
+divvy_final <- divvy_matched # This is the final object we'll play with.
 ########################### END JOIN DATA ###############################
 
 
 ############################### SAVE DATA ###############################
 # Save to non-git folder. 
-write.csv(divvy_data, file = "~/Google Drive/Go Divvy/divvy_data.csv", row.names = FALSE)
+write.csv(divvy_final, file = "~/Google Drive/Go Divvy/divvy_data.csv", row.names = FALSE)
 # Save RObject
 saveRDS(divvy_final, file = "~/Google Drive/Go Divvy/divvy_data.rda")
 
@@ -68,6 +73,8 @@ saveRDS(divvy_final, file = "~/Google Drive/Go Divvy/divvy_data.rda")
 system("cp '/Users/sagelane/Google Drive/Go Divvy/divvy_data.csv' '/Users/sagelane/Google Drive/Go Divvy/go_divvy/data/divvy_data_small.csv'")
 system("gzip '/Users/sagelane/Google Drive/Go Divvy/go_divvy/data/divvy_data_small.csv'")
 ########################### END SAVE DATA ###############################
+# divvy_final <- readRDS(file = "~/Google Drive/Go Divvy/divvy_data.rda")
+
 
 
 

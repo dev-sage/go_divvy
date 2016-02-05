@@ -8,14 +8,22 @@ L.tileLayer('https://api.tiles.mapbox.com/v4/{mapid}/{z}/{x}/{y}.png?access_toke
              accessToken: 'pk.eyJ1IjoiZGV2LXNhZ2UiLCJhIjoiY2lrMW9yMXIwMzlyMHZnbHpwb3RrcnN2cyJ9.1nGy-0e-Xwg-kEyOvy5Isg'
             }).addTo(map);
 
-function draw_route(polyline, alpha) {
+var drawn_path = Array(929), i= 0;
+function draw_route(polyline, alpha, line_num) {
 	var decoded_path = L.Polyline.fromEncoded(polyline);
-	var drawn_path = new L.Polyline(decoded_path.getLatLngs(), {
+	drawn_path[i] = new L.Polyline(decoded_path.getLatLngs(), {
 		snakingSpeed: 50, snakingPause: 0, color: "#1ac6ff", opacity: alpha, weight: 2.00 });
 
 	//path_layer.addLayer(drawn_path);	
 	//map.addLayer(path_layer);
-	drawn_path.addTo(map).snakeIn();
+	
+	drawn_path[i].addTo(map).snakeIn();
+	
+	/*drawn_path[i].on('mouseover', function(e) {
+		drawn_path.color = "red";
+		drawn_path.opacity = 1;
+	});
+	i++; */ 
 	//drawn_path.addEventListener('snakeend', clear_path(this));
 }
 
@@ -41,7 +49,7 @@ d3.csv("data/combo_lines.csv", function(error, data) {
 		.domain([0.1, d3.max(data, function(row) { return row.count })])
 		.range([0, 1]);
 
-	setTimeout(data.forEach(function(row) { draw_route(row.polyline, alpha_scale(row.count)); }), 10000);
+	data.forEach(function(row) { draw_route(row.polyline, alpha_scale(row.count)); });
 
 
 })
