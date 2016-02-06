@@ -1,5 +1,5 @@
  /* Creating Map */ 
-var map = L.map("map", {zoomControl: false}).setView([41.891139, -87.626542], 12);
+var map = L.map("map", {zoomControl: true}).setView([41.891139, -87.626542], 12);
 L.tileLayer('https://api.tiles.mapbox.com/v4/{mapid}/{z}/{x}/{y}.png?access_token={accessToken}', {
              attribution: "",
              maxZoom: 15,

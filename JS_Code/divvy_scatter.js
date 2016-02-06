@@ -25,7 +25,7 @@ d3.csv("data/combo_lines.csv", function(error, data) {
 
 	});	
 
-	var padding = 100, w = window.innerWidth * 0.60, h = window.innerHeight * 0.70;
+	var padding = 100, w = window.innerWidth * 0.60, h = window.innerHeight * 1;
 
 	var xScale = d3.scale.linear()
 							.domain([0, d3.max(data, function(row) { return row.distance; })])
@@ -96,8 +96,15 @@ d3.csv("data/combo_lines.csv", function(error, data) {
 	svg.append("text")
 		.attr("text-anchor", "middle")
 		.attr("x", w / 2 )
-		.attr("y", h - 35)
+		.attr("y", h - 40)
 		.text("Distance");
+
+	svg.append("text")
+		.attr("text-anchor", "middle")
+		.attr("x", w / 2)
+		.attr("y", 50)
+		.attr("font-size", 32)
+		.text("1000 Most Popular Divvy Trips (2015)");
 
 	// yAxis
 	svg.append("g")
@@ -112,5 +119,6 @@ d3.csv("data/combo_lines.csv", function(error, data) {
 		.attr("dy", "1.5em")
 		.attr("transform", "rotate(-90)")
 		.text("Count of Trips Taken");
+
 
 });
