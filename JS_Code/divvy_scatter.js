@@ -25,15 +25,15 @@ d3.csv("data/combo_lines.csv", function(error, data) {
 
 	});	
 
-	var padding = 100, w = window.innerWidth * 0.60, h = window.innerHeight * 1;
+	var left_pad = 75, right_pad = 50, w = window.innerWidth * 0.55, h = window.innerHeight * 1;
 
 	var xScale = d3.scale.linear()
 							.domain([0, d3.max(data, function(row) { return row.distance; })])
-							.range([padding, w - padding]);
+							.range([left_pad, w - right_pad]);
 
 	var yScale = d3.scale.linear()
 							.domain([0, d3.max(data, function(row) { return row.count; })])
-							.range([h - padding, padding]);
+							.range([h - right_pad, left_pad]);
 
 	var r_scale = d3.scale.sqrt()
 							.domain([0, d3.max(data, function(row) { return row.count; })])
@@ -90,26 +90,26 @@ d3.csv("data/combo_lines.csv", function(error, data) {
 	// xAxis
 	svg.append("g")
 		.attr("class", "axis")
-		.attr("transform", "translate(0," + (h - padding) + ")")
+		.attr("transform", "translate(0," + (h - right_pad) + ")")
 		.call(xAxis);
 
 	svg.append("text")
 		.attr("text-anchor", "middle")
 		.attr("x", w / 2 )
-		.attr("y", h - 40)
-		.text("Distance");
+		.attr("y", h - 2)
+		.text("Distance (km)");
 
 	svg.append("text")
 		.attr("text-anchor", "middle")
 		.attr("x", w / 2)
-		.attr("y", 50)
+		.attr("y", 32)
 		.attr("font-size", 32)
 		.text("1000 Most Popular Divvy Trips (2015)");
 
 	// yAxis
 	svg.append("g")
 		.attr("class", "axis")
-		.attr("transform", "translate(" + padding + ",0)")
+		.attr("transform", "translate(" + left_pad + ",0)")
 		.call(yAxis);
 
 	svg.append("text")
