@@ -3,12 +3,14 @@ function trip_info(trip) {
 	$trip_message = $("<div id = 'message'></div>");
 	$("body").append($trip_message);
 	$trip_message.append("<center> From: " + trip.from_station_name + "<br> To: " + trip.to_station_name +
-		"<br> Distance: " + trip.distance + " km" + "<br> Time: " + trip.time + " (s) </center>");	
+		"<br> Distance: " + trip.distance + " km" + "<br> Frequency: " + trip.count + " trips </center>");	
 }
 
 function remove_trip_info() {
 	$trip_message.remove();
 }
+
+
 
 
 d3.csv("data/combo_lines.csv", function(error, data) {
@@ -30,12 +32,16 @@ d3.csv("data/combo_lines.csv", function(error, data) {
 							.range([padding, w - padding]);
 
 	var yScale = d3.scale.linear()
-							.domain([0, d3.max(data, function(row) { return row.time; })])
+							.domain([0, d3.max(data, function(row) { return row.count; })])
 							.range([h - padding, padding]);
 
 	var r_scale = d3.scale.sqrt()
 							.domain([0, d3.max(data, function(row) { return row.count; })])
-							.range([0, 20]);
+							.range([0, 15]);
+
+	var opacity_scale = d3.scale.sqrt()
+								.domain([0	, d3.max(data, function(row) { return row.count; })])
+								.range([0, 1]);
 
 	var xAxis = d3.svg.axis()
 						.scale(xScale)
@@ -56,22 +62,25 @@ d3.csv("data/combo_lines.csv", function(error, data) {
 		.enter()
 		.append("circle")
 		.attr("cx", function(row) { return xScale(row.distance); })
-		.attr("cy", function(row) { return yScale(row.time); })
+		.attr("cy", function(row) { return yScale(row.count); })
 		.attr("r", function(row) { return r_scale(row.count); })
+		.attr("opacity", function(row) { return opacity_scale(row.count); })
 		.attr("stroke", "#1ac6ff")
 		.on("mouseover", function(row) { 
 			d3.select(this)
 				.transition()
 				.duration(100)
-				.attr("fill", "orange");	
+				.attr("fill", "orange")
+				.attr("opacity", 1);
 			trip_info(row);
-			draw_route(row.polyline, 0.75, "red", 3.50); 
+			draw_route(row.polyline, 0.85, "orange", 4.0, true); 
 		})
 		.on("mouseout", function(row) { 
 			d3.select(this)
 				.transition()
 				.duration(275)
-				.attr("fill", "black");
+				.attr("fill", "black")
+				.attr("opacity", function(row) { return opacity_scale(row.count); });
 				
 				remove_trip_info(); 
 
@@ -99,9 +108,9 @@ d3.csv("data/combo_lines.csv", function(error, data) {
 	svg.append("text")
 		.attr("text-anchor", "bottom")
 		.attr("y", 0 - 10)
-		.attr("x", 0 - (h / 2))
+		.attr("x", 0 - (h * 0.60))
 		.attr("dy", "1.5em")
 		.attr("transform", "rotate(-90)")
-		.text("Time (s)");
+		.text("Count of Trips Taken");
 
 });

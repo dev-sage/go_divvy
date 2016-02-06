@@ -17,7 +17,7 @@
       margin-left: 0%;  
       float: left;
       margin-top: 0px;
-      margin-bottom: 10px;
+      margin-bottom: 0px;
     }
 
     #scatter_layout
@@ -33,7 +33,7 @@
     {
       margin: 0px; 
       font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-      font-size: 24px;
+      font-size: 20px;
       font-style: normal;
       font-variant: normal;
       font-weight: 500;
@@ -62,10 +62,24 @@
     {
       position: absolute;
       top: 80%;
-      margin-left: 40%;
-      width: 60%;
-      background-color: "#1ac6ff";
+      margin-left: 52.5%;
+      width: 35%;
+      background-color: #1ac6ff;
+      color: white;
+      border-radius: 25px;
+      opacity: 0.90;
     }
+
+    /*#outline_div
+    {
+      position: absolute;
+      height: 100%;
+      width: 60%;
+      margin-right: 0%;
+      margin-left: 38%;
+      outline: grey inset;
+      margin-top: 0px;
+    }*/ 
 
 
 
@@ -76,6 +90,7 @@
   <div id = "map">
     <script src = "JS_Code/divvy_map.js"></script>
   </div>
+  <div id = "outline_div"></div>
   <div id = "scatter_layout">
     <center><h2> Most Popular Divvy Trips (2015) </h2></center>
     <script src = "JS_Code/divvy_scatter.js"></script>

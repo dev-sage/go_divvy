@@ -16,13 +16,17 @@ function draw_route(polyline, alpha, path_col, line_size, scatter_line) {
 
 	//path_layer.addLayer(drawn_path);	
 	//map.addLayer(path_layer);
-	drawn_path.addTo(map).snakeIn();
-	if(scatter_line) { path_layer.addLayer(drawn_path); }
+	if(!scatter_line) drawn_path.addTo(map).snakeIn();
+	if(scatter_line) {
+		path_layer.addLayer(drawn_path);
+		path_layer.addTo(map);
+	}
 	//drawn_path.addEventListener('snakeend', clear_path(this));
 }
 
 function remove_trip_path(path) {
 	map.removeLayer(path_layer);
+	path_layer = new L.layerGroup();
 }
 
 var data_g;
