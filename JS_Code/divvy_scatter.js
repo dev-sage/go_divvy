@@ -119,6 +119,4 @@ d3.csv("data/combo_lines.csv", function(error, data) {
 		.attr("dy", "1.5em")
 		.attr("transform", "rotate(-90)")
 		.text("Count of Trips Taken");
-
-
 });
