@@ -3,6 +3,7 @@ library(ggmap)
 library(stats)
 library(dplyr)
 library(lubridate)
+library(gridExtra)
 
 #######################################################
 # FOR MAP + SCATTERPLOT #
@@ -79,7 +80,7 @@ hours_g <- group_by(hours_only, hours)
 hours_summ <- summarise(hours_g, count = n())
 hours_summ$hourly_rate <- hours_summ$count / length(unique(yday(divvy_final$start_time)))
 hours_summ <- rbind(hours_summ, c(-1, 0, 0)) # Purely aesthetic, to balance the empty left / right of graph.
-ggplot(data = hours_summ, aes(x = hours, y = hourly_rate)) + geom_bar(stat = "identity", fill = "#1ac6ff") +
+overall_hourly_plot <- ggplot(data = hours_summ, aes(x = hours, y = hourly_rate)) + geom_bar(stat = "identity", fill = "#1ac6ff") +
   ylab("Riders Per Hour\n") + ggtitle(expression(atop(bold("Divvy Ridership Daily Average"), atop("(2015)")))) + 
   scale_x_discrete(breaks = c(-1, 0, 3, 6, 9, 12, 15, 18, 21, 24), 
                    labels = c("-1"= "", "0" = "12am", "3" = "3am", "6" = "6am", "9" = "9am", 
@@ -96,12 +97,13 @@ weekday_hours_g <- group_by(weekday_hours_only, weekday_hours)
 weekday_hours_summ <- summarise(weekday_hours_g, count = n())
 weekday_hours_summ <- rbind(weekday_hours_summ, c(-1, 0, 0)) # Purely aesthetic, to balance the empty left / right of graph.
 weekday_hours_summ$hourly_rate <- weekday_hours_summ$count / length(unique(yday(divvy_weekdays$start_time)))
-ggplot(data = weekday_hours_summ, aes(x = weekday_hours, y = hourly_rate)) + geom_bar(stat = "identity", fill = "#1ac6ff") +
-  ylab("Riders Per Hour\n") + ggtitle(expression(atop(bold("Divvy Ridership Weekday Average"), atop("(2015)")))) + 
+weekday_hourly_plot <- ggplot(data = weekday_hours_summ, aes(x = weekday_hours, y = hourly_rate)) + geom_bar(stat = "identity", fill = "#1ac6ff") +
+  ylab("Riders Per Hour\n") + ggtitle("Monday - Friday") + 
   scale_x_discrete(breaks = c(-1, 0, 3, 6, 9, 12, 15, 18, 21, 24), 
                    labels = c("-1"= "", "0" = "12am", "3" = "3am", "6" = "6am", "9" = "9am", 
                               "12" = "12pm", "15" = "3pm", "18" = "6pm", "21" = "9pm", "24" = "12am")) + 
-  coord_cartesian(ylim = c(0, 1000)) + scale_y_continuous(breaks = c(0, 250, 500, 750, 1000)) + my_theme
+  coord_cartesian(ylim = c(0, 1000)) + scale_y_continuous(breaks = c(0, 250, 500, 750, 1000)) + 
+  my_theme
 
 # Weekend Hourly Rate
 # Lubridate wday()s are 1-7, Sun - Sat
@@ -112,12 +114,15 @@ weekend_hours_g <- group_by(weekend_hours_only, weekend_hours)
 weekend_hours_summ <- summarise(weekend_hours_g, count = n())
 weekend_hours_summ <- rbind(weekend_hours_summ, c(-1, 0, 0)) # Purely aesthetic, to balance the empty left / right of graph.
 weekend_hours_summ$hourly_rate <- weekend_hours_summ$count / length(unique(yday(divvy_weekend$start_time)))
-ggplot(data = weekend_hours_summ, aes(x = weekend_hours, y = hourly_rate)) + geom_bar(stat = "identity", fill = "#1ac6ff") +
-  ylab("Riders Per Hour\n") + ggtitle(expression(atop(bold("Divvy Ridership Weekend Average"), atop("(2015)")))) + 
+weekend_hourly_plot <- ggplot(data = weekend_hours_summ, aes(x = weekend_hours, y = hourly_rate)) + geom_bar(stat = "identity", fill = "#1ac6ff") +
+  ggtitle("Saturday - Sunday") + ylab("Daily Ridership\n")+ 
   scale_x_discrete(breaks = c(-1, 0, 3, 6, 9, 12, 15, 18, 21, 24), 
                    labels = c("-1"= "", "0" = "12am", "3" = "3am", "6" = "6am", "9" = "9am", 
                               "12" = "12pm", "15" = "3pm", "18" = "6pm", "21" = "9pm", "24" = "12am")) + 
-  coord_cartesian(ylim = c(0, 1000)) + scale_y_continuous(breaks = c(0, 250, 500, 750, 1000, 1250)) + my_theme
+  coord_cartesian(ylim = c(0, 1000)) + scale_y_continuous(breaks = c(0, 250, 500, 750, 1000, 1250)) + 
+  my_theme
+
+grid.arrange(weekday_hourly_plot, weekend_hourly_plot, ncol = 1)
 
 # Daily Ridership Throughout Year
 divvy_days_only <- as.data.frame(as.Date(divvy_final$start_time, "%m/%d/%y", tz = "UTC"))
