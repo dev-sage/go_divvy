@@ -85,7 +85,8 @@ colnames(weekend_hours_only) <- "weekend_hours"
 weekend_hours_g <- group_by(weekend_hours_only, weekend_hours)
 weekend_hours_summ <- summarise(weekend_hours_g, count = n())
 weekend_hours_summ$hourly_rate <- weekend_hours_summ$count / length(unique(yday(divvy_weekend$start_time)))
-ggplot(data = weekend_hours_summ, aes(x = weekend_hours, y = hourly_rate)) + geom_bar(stat = "identity")
+ggplot(data = weekend_hours_summ, aes(x = weekend_hours, y = hourly_rate)) + geom_bar(stat = "identity") + 
+  my_theme
 
 # Daily Ridership Throughout Year
 divvy_days_only <- as.data.frame(as.Date(divvy_final$start_time, "%m/%d/%y", tz = "UTC"))
@@ -93,4 +94,19 @@ colnames(divvy_days_only) <- "day"
 divvy_days_only_g <- group_by(divvy_days_only, day)
 divvy_days_only_summ <- summarise(divvy_days_only_g, count = n())
 ggplot(data = divvy_days_only_summ, aes(x = day, y = count)) + geom_path(col = "#1ac6ff", lwd = 1) + 
-  scale_x_date(date_breaks = "months", date_labels = "%B")
+  scale_x_date(date_breaks = "2 months", date_labels = "%B") +
+  scale_y_continuous(breaks = seq(0, 25000, by = 5000)) + my_theme + 
+  ylab("Daily Ridership\n") + ggtitle(expression(atop(bold("\nDivvy Daily Ridership"), atop(italic("(2015)")))))
+
+
+my_theme <- theme(plot.background = element_rect(fill = "#EDEDED"),
+                  panel.background = element_rect(fill = "#EDEDED"),
+                  panel.grid.major = element_line(color = "#CDCDCD"),
+                  panel.grid.major.x = element_blank(),
+                  axis.title.x = element_blank(),
+                  title = element_text(size = 17, color = "#3D3D3D", face = "bold"),
+                  axis.title.y = element_text(size = 16),
+                  axis.text = element_text(size = 14),
+                  axis.ticks = element_blank(),
+                  panel.grid.minor = element_blank(),
+                  plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm"))
