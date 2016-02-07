@@ -4,6 +4,10 @@ library(stats)
 library(dplyr)
 library(lubridate)
 
+#######################################################
+# FOR MAP + SCATTERPLOT #
+#######################################################
+
 # Determine Most Common Station Pairs. The object here is to determine
 # which trips are the most common. A trip is defined by one origin -> destination leg.
 divvy_to_from <- divvy_final[,c("from_station_id", "to_station_id")]
@@ -52,7 +56,35 @@ write.table(combos_with_lines,
             row.names = FALSE, sep = ",", col.names = TRUE, append = FALSE)
 
 #######################################################
-# Get numbers of trips by the hour in 24 hour periods #
+# TEMPORALITY #
 #######################################################
-ggplot(data = combos_with_lines, aes(x = distance, y = count, color = factor(floor(distance)))) + geom_point()
+
+# Overall Hourly Rate
+hours_only <- as.data.frame(hour(divvy_final$start_time))
+colnames(hours_only) <- "hours"
+hours_g <- group_by(hours_only, hours)
+hours_summ <- summarise(hours_g, count = n())
+hours_summ$hourly_rate <- hours_summ$count / length(unique(yday(divvy_final$start_time)))
+ggplot(data = hours_summ, aes(x = hours, y = hourly_rate)) + geom_bar(stat = "identity")
+
+# Weekday Hourly Rate
+# Lubridate wday()s are 1-7, Sun - Sat
+divvy_weekdays <- divvy_final[!wday(divvy_final$start_time) %in% c(1,7), ] 
+weekday_hours_only <- as.data.frame(hour(divvy_weekdays$start_time))
+colnames(weekday_hours_only) <- "weekday_hours"
+weekday_hours_g <- group_by(weekday_hours_only, weekday_hours)
+weekday_hours_summ <- summarise(weekday_hours_g, count = n())
+weekday_hours_summ$hourly_rate <- weekday_hours_summ$count / length(unique(yday(divvy_weekdays$start_time)))
+ggplot(data = weekday_hours_summ, aes(x = weekday_hours, y = hourly_rate)) + geom_bar(stat = "identity")
+
+# Weekend Hourly Rate
+# Lubridate wday()s are 1-7, Sun - Sat
+divvy_weekend <- divvy_final[wday(divvy_final$start_time) %in% c(1,7), ]
+weekend_hours_only <- as.data.frame(hour(divvy_weekend$start_time))
+colnames(weekend_hours_only) <- "weekend_hours"
+weekend_hours_g <- group_by(weekend_hours_only, weekend_hours)
+weekend_hours_summ <- summarise(weekend_hours_g, count = n())
+weekend_hours_summ$hourly_rate <- weekend_hours_summ$count / length(unique(yday(divvy_weekend$start_time)))
+ggplot(data = weekend_hours_summ, aes(x = weekend_hours, y = hourly_rate)) + geom_bar(stat = "identity")
+
 

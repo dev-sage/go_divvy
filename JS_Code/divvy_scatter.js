@@ -25,7 +25,7 @@ d3.csv("data/combo_lines.csv", function(error, data) {
 
 	});	
 
-	var left_pad = 75, right_pad = 50, w = window.innerWidth * 0.55, h = window.innerHeight * 1;
+	var left_pad = 75, right_pad = 50, w = window.innerWidth * 0.60, h = window.innerHeight * 1;
 
 	var xScale = d3.scale.linear()
 							.domain([0, d3.max(data, function(row) { return row.distance; })])
@@ -73,7 +73,7 @@ d3.csv("data/combo_lines.csv", function(error, data) {
 				.attr("fill", "orange")
 				.attr("opacity", 1);
 			trip_info(row);
-			draw_route(row.polyline, 0.85, "orange", 4.0, true); 
+			draw_route(row.polyline, 1, "orange", 3.00, true); 
 		})
 		.on("mouseout", function(row) { 
 			d3.select(this)
@@ -104,7 +104,7 @@ d3.csv("data/combo_lines.csv", function(error, data) {
 		.attr("x", w / 2)
 		.attr("y", 32)
 		.attr("font-size", 32)
-		.text("1000 Most Popular Divvy Trips (2015)");
+		.text("1,000 Most Popular Divvy Trips (2015)");
 
 	// yAxis
 	svg.append("g")

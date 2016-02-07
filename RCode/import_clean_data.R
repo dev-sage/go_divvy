@@ -73,7 +73,7 @@ saveRDS(divvy_final, file = "~/Google Drive/Go Divvy/divvy_data.rda")
 system("cp '/Users/sagelane/Google Drive/Go Divvy/divvy_data.csv' '/Users/sagelane/Google Drive/Go Divvy/go_divvy/data/divvy_data_small.csv'")
 system("gzip '/Users/sagelane/Google Drive/Go Divvy/go_divvy/data/divvy_data_small.csv'")
 ########################### END SAVE DATA ###############################
-# divvy_final <- readRDS(file = "~/Google Drive/Go Divvy/divvy_data.rda")
+divvy_final <- readRDS(file = "~/Google Drive/Go Divvy/divvy_data.rda")
 
 
 
