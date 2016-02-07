@@ -87,4 +87,10 @@ weekend_hours_summ <- summarise(weekend_hours_g, count = n())
 weekend_hours_summ$hourly_rate <- weekend_hours_summ$count / length(unique(yday(divvy_weekend$start_time)))
 ggplot(data = weekend_hours_summ, aes(x = weekend_hours, y = hourly_rate)) + geom_bar(stat = "identity")
 
-
+# Daily Ridership Throughout Year
+divvy_days_only <- as.data.frame(as.Date(divvy_final$start_time, "%m/%d/%y", tz = "UTC"))
+colnames(divvy_days_only) <- "day"
+divvy_days_only_g <- group_by(divvy_days_only, day)
+divvy_days_only_summ <- summarise(divvy_days_only_g, count = n())
+ggplot(data = divvy_days_only_summ, aes(x = day, y = count)) + geom_path(col = "#1ac6ff", lwd = 1) + 
+  scale_x_date(date_breaks = "months", date_labels = "%B")
