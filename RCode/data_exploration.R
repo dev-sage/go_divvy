@@ -4,7 +4,8 @@ library(stats)
 library(dplyr)
 library(lubridate)
 library(gridExtra)
-
+library(sqldf)
+library(scales)
 #######################################################
 # FOR MAP + SCATTERPLOT #
 #######################################################
@@ -63,6 +64,7 @@ write.table(combos_with_lines,
 # Set theme for use.
 my_theme <- theme(plot.background = element_rect(fill = "#EDEDED"),
                   panel.background = element_rect(fill = "#EDEDED"),
+                  legend.background = element_rect(fill = "#EDEDED"),
                   panel.grid.major = element_line(color = "#CDCDCD"),
                   panel.grid.major.x = element_blank(),
                   axis.title.x = element_blank(),
@@ -71,7 +73,9 @@ my_theme <- theme(plot.background = element_rect(fill = "#EDEDED"),
                   axis.text = element_text(size = 14),
                   axis.ticks = element_blank(),
                   panel.grid.minor = element_blank(),
-                  plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm"))
+                  plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm"),
+                  legend.text = element_text(size = 12, face = "bold", color = "#3D3D3D",),
+                  legend.key = element_blank())
 
 # Overall Hourly Rate
 hours_only <- as.data.frame(hour(divvy_final$start_time))
@@ -144,3 +148,70 @@ ggplot(data = divvy_june, aes(x = day, y = count)) + geom_path(col = "#1ac6ff", 
   my_theme + theme(axis.text.x = element_text(angle = 0), 
                    axis.ticks.x = element_line(size = 2), 
                    panel.grid.major.x = element_line(color = "#CDCDCD", size = 0.25))
+
+divvy_quarter <- filter(divvy_days_only_summ, month(day) %in% c(1,2,3))
+ggplot(data = divvy_quarter, aes(x = day, y = count)) + geom_path(col = "#1ac6ff", lwd = 1) + 
+  scale_x_date(date_breaks = "day", date_labels = "%a") +
+#   scale_y_continuous(breaks = c(0, 5000, 10000, 15000, 20000, 25000)) + 
+#   coord_cartesian(ylim = c(5000, 25000)) + 
+  ylab("Daily Ridership\n") + ggtitle(expression(atop(bold("Divvy December Ridership"), atop("(Daily Totals, 2015)")))) + 
+  my_theme + theme(axis.text.x = element_text(angle = 0), 
+                   axis.ticks.x = element_line(size = 2), 
+                   panel.grid.major.x = element_line(color = "#CDCDCD", size = 0.25))
+
+
+# Getting total average ridership by day.
+# Get the unique grouping variable.
+divvy_days <- divvy_days_only_summ
+divvy_days$day_name <- format(divvy_days_only_summ$day, "%A")
+divvy_days <- divvy_days[, c("day_name", "count")]
+divvy_days_g <- group_by(divvy_days, day_name)
+divvy_summ <- summarise(divvy_days_g, total_count = sum(count))
+
+divvy_final_cold <-filter(divvy_days_only_summ, month(divvy_days_only_summ$day) %in% c(1, 2, 3, 4, 11, 12))
+divvy_final_cold$day_name <- format(divvy_final_cold$day, "%A")
+divvy_final_cold <- divvy_final_cold[, c("day_name", "count")]
+divvy_days_g <- group_by(divvy_final_cold, day_name)
+(divvy_summ <- summarise(divvy_days_g, total_count = sum(count)))
+cold_divvy <- divvy_summ
+cold_divvy$perc <- ifelse(cold_divvy$total_count, cold_divvy$total_count / (sum(cold_divvy$total_count)))
+
+divvy_final_cold <-filter(divvy_days_only_summ, month(divvy_days_only_summ$day) %in% c(5, 6, 7, 8, 9, 10))
+divvy_final_cold$day_name <- format(divvy_final_cold$day, "%A")
+divvy_final_cold <- divvy_final_cold[, c("day_name", "count")]
+divvy_days_g <- group_by(divvy_final_cold, day_name)
+(divvy_summ <- summarise(divvy_days_g, total_count = sum(count)))
+warm_divvy <- divvy_summ
+warm_divvy$perc <- ifelse(warm_divvy$total_count, warm_divvy$total_count / (sum(warm_divvy$total_count)))
+
+#######################################################
+# Describe Ridership #
+#######################################################
+# Get Age Distribution
+divvy_final$age <- ( 2015 - divvy_final$birth_year)
+subscriber_data <- filter(divvy_final, toupper(user_type) == "SUBSCRIBER" & !is.na(gender) & age < 100)
+
+ggplot(data = subscriber_data, aes(x = age)) + 
+  geom_bar(aes(y = (..count..)/sum(..count..)),  fill = "#FFA500") + 
+  scale_y_continuous(labels = percent) +  
+  scale_x_discrete(breaks = c(16, seq(20, max(subscriber_data$age), by = 5))) + 
+  ylab("Subscriber Base\n") + ggtitle("Subscriber Age Distribution") + 
+  my_theme
+
+ggplot(data = subscriber_data, aes(x = gender)) + 
+  geom_bar(aes(y = (..count..)/sum(..count..)), fill = c("#FFA500", "#1ac6ff")) + 
+  scale_y_continuous(labels = percent) + 
+  expand_limits(y = c(0, 1)) + 
+  ylab("Subscriber Makeup\n") + ggtitle("Subscriber Gender Distribution") + 
+  my_theme
+
+ggplot(data = subscriber_data, aes(x = age, fill = gender)) + 
+  geom_bar(aes(y = (..count..)/sum(..count..))) + 
+  scale_y_continuous(labels = percent) +  
+  scale_fill_manual(values = c("#FFA500", "#1ac6ff"), name = "Gender") +
+  scale_x_discrete(breaks = c(16, seq(20, max(subscriber_data$age), by = 5))) + 
+  ylab("Subscriber Base\n") + ggtitle(expression(atop(bold("Divvy Subscriber Age Distribution"), atop("(2015)")))) + 
+  my_theme
+
+
+

@@ -45,7 +45,7 @@
       </ul>
       For the year of 2015, this amounts to more than 3,000,000 unique trips to sift through. Before going further, it's worth noting that this study will parallel many of the steps taken by Todd Schneider in his excellent <a href = "http://toddwschneider.com/posts/a-tale-of-twenty-two-million-citi-bikes-analyzing-the-nyc-bike-share-system/"> analysis of NYC Citi Bike data</a>. However, although I'm aware of this fantastic article, the code I've written and the analysis I perform are my own work, and are available for review at my <a href = "https://github.com/dev-sage/go_divvy"> github repository</a>. As much as I'd like to perform a completely novel analysis, some of the preliminary data dissection done by Mr. Schneider is necessary for an understanding of the fundamental trends of the data, and I would be remiss to omit them. I will venture onto some paths not previously trod, but interections will naturally occur. Let them simply serve as additional data points on urban bike sharing.
 
-    <h2> Top 1,000 Routes </h2>
+    <h2> Most Common Routes Mapped</h2>
       <p>To augment the dataset provided by Divvy, the MapQuest directions API was queried to obtain distance, time, and route (paths) for the 1,000 most frequented trips. The routes were calculated specifically for biking directions, and the distances and times associated with each route correspond to this mode of transportation. To be clear: a route corresponds to a <strong>single station-to-station trip</strong>. Multiple waypoint trips are not tracked. 
 
       <p> Below is a map of the most common routes, along with an accompanying scatterplot. The routes were drawn with an alpha relative to their frequency, hence the paths most traveled appear more vibrant in color. Mousing over individual points in the scatterplot will highlight the corresponding path, and provide information about the stations of origin and destination.</p>
@@ -64,6 +64,7 @@
   <h2> Temporality </h2>
   <p> When exactly <i>would</i> one expect ridership to be at it's peak? It does have potential to augment the already in-place transit system for those commuting to work, which would lend usage to those going-to and coming-from work hours. However in another respect, biking could be considered a tourist activity that would be more or less immune to the morning and afternoon rushes. 
   <p>
+
   <img src = "assets/week_day_end.png">
   </p>
   </div>
