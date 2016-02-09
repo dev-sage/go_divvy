@@ -6,6 +6,7 @@ library(lubridate)
 library(gridExtra)
 library(sqldf)
 library(scales)
+library(tidyr)
 #######################################################
 # FOR MAP + SCATTERPLOT #
 #######################################################
@@ -214,4 +215,81 @@ ggplot(data = subscriber_data, aes(x = age, fill = gender)) +
   my_theme
 
 
+divvy_days_gender <- data.frame(day = as.Date(subscriber_data$start_time, "%m/%d/%y", tz = "UTC"), gender = subscriber_data$gender)
+divvy_days_gender_g <- group_by(divvy_days_gender, day, gender)
+divvy_days_gender_summ <- summarise(divvy_days_gender_g, count = n())
 
+divvy_male <- filter(divvy_days_gender_summ , gender == "Male")
+divvy_female <- filter(divvy_days_gender_summ, gender == "Female")
+divvy_gender_join <- inner_join(divvy_male, divvy_female, by = c("day" = "day"))
+divvy_gender_join$male_perc <- divvy_gender_join$count.x / (divvy_gender_join$count.y + divvy_gender_join$count.x)
+divvy_gender_join$female_perc <- divvy_gender_join$count.y / (divvy_gender_join$count.x + divvy_gender_join$count.y)
+divvy_male_count <- divvy_gender_join[,c("day", "gender.x", "count.x", "male_perc")]
+divvy_female_count <- divvy_gender_join[,c("day", "gender.y", "count.y", "female_perc")]
+colnames(divvy_male_count) <- c("day", "gender", "count", "perc")
+colnames(divvy_female_count) <- c("day", "gender", "count", "perc")
+divvy_gender_counts <- rbind(divvy_male_count, divvy_female_count)
+
+ggplot(data = divvy_gender_counts, aes(x = day, y = perc, col = gender)) + geom_path() + 
+  scale_x_date(date_breaks = "month", date_labels = "%B")
+  
+
+
+divvy_gender_counts$day_name <- wday(divvy_gender_counts$day)
+divvy_gender_counts_g <- group_by(divvy_gender_counts, gender, day_name)
+divvy_gender_counts_summ <- summarise(divvy_gender_counts_g, mean_perc = mean(perc))
+
+
+
+
+
+fdafs
+
+
+
+
+
+
+
+
+
+
+
+
+
+#### Monthly averages
+divvy_days_gender <- data.frame(day = format(subscriber_data$start_time, "%m/%y"), gender = subscriber_data$gender)
+divvy_days_gender_g <- group_by(divvy_days_gender, day, gender)
+divvy_days_gender_summ <- summarise(divvy_days_gender_g, count = n())
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+divvy_male <- filter(divvy_days_gender_summ , gender == "Male")
+divvy_female <- filter(divvy_days_gender_summ, gender == "Female")
+divvy_gender_join <- inner_join(divvy_male, divvy_female, by = c("day" = "day"))
+divvy_gender_join$male_perc <- divvy_gender_join$count.x / (divvy_gender_join$count.y + divvy_gender_join$count.x)
+divvy_gender_join$female_perc <- divvy_gender_join$count.y / (divvy_gender_join$count.x + divvy_gender_join$count.y)
+divvy_male_count <- divvy_gender_join[,c("day", "gender.x", "count.x", "male_perc")]
+divvy_female_count <- divvy_gender_join[,c("day", "gender.y", "count.y", "female_perc")]
+colnames(divvy_male_count) <- c("day", "gender", "count", "perc")
+colnames(divvy_female_count) <- c("day", "gender", "count", "perc")
+divvy_gender_counts <- rbind(divvy_male_count, divvy_female_count)
+
+divvy_gender_counts$month <- as.Date(as.character(divvy_gender_counts$day), "%m/%y")
+ggplot(data = divvy_gender_counts, aes(x = day, y = count, col = gender)) + geom_path()
