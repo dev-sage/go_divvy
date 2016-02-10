@@ -138,14 +138,14 @@ divvy_days_only_summ <- summarise(divvy_days_only_g, count = n())
 ggplot(data = divvy_days_only_summ, aes(x = day, y = count)) + geom_path(col = "#1ac6ff", lwd = 1) + 
   scale_x_date(date_breaks = "month", date_labels = "%B") +
   scale_y_continuous(breaks = seq(0, 25000, by = 5000)) + my_theme + 
-  ylab("Daily Ridership\n") + ggtitle(expression(atop(bold("Divvy Daily Ridership"), atop("(2015)"))))
+  ylab("Total Ridership\n") + ggtitle(expression(atop(bold("Divvy Daily Ridership"), atop("(2015)"))))
 
 divvy_june <- filter(divvy_days_only_summ, month(day) == 6)
 ggplot(data = divvy_june, aes(x = day, y = count)) + geom_path(col = "#1ac6ff", lwd = 1) + 
   scale_x_date(date_breaks = "day", date_labels = "%a") +
   scale_y_continuous(breaks = c(0, 5000, 10000, 15000, 20000, 25000)) + 
   coord_cartesian(ylim = c(5000, 25000)) + 
-  ylab("Daily Ridership\n") + ggtitle(expression(atop(bold("Divvy June Ridership"), atop("(Daily Totals, 2015)")))) + 
+  ylab("Totals Ridership\n") + ggtitle(expression(atop(bold("Divvy June Ridership"), atop("(Daily Totals, 2015)")))) + 
   my_theme + theme(axis.text.x = element_text(angle = 0), 
                    axis.ticks.x = element_line(size = 2), 
                    panel.grid.major.x = element_line(color = "#CDCDCD", size = 0.25))
@@ -176,6 +176,8 @@ divvy_days_g <- group_by(divvy_final_cold, day_name)
 (divvy_summ <- summarise(divvy_days_g, total_count = sum(count)))
 cold_divvy <- divvy_summ
 cold_divvy$perc <- ifelse(cold_divvy$total_count, cold_divvy$total_count / (sum(cold_divvy$total_count)))
+cold_divvy$temp <- "Cold"
+cold_divvy$day_num <- c(5, 1, 6, 7, 4, 2, 3)
 
 divvy_final_cold <-filter(divvy_days_only_summ, month(divvy_days_only_summ$day) %in% c(5, 6, 7, 8, 9, 10))
 divvy_final_cold$day_name <- format(divvy_final_cold$day, "%A")
@@ -184,6 +186,25 @@ divvy_days_g <- group_by(divvy_final_cold, day_name)
 (divvy_summ <- summarise(divvy_days_g, total_count = sum(count)))
 warm_divvy <- divvy_summ
 warm_divvy$perc <- ifelse(warm_divvy$total_count, warm_divvy$total_count / (sum(warm_divvy$total_count)))
+warm_divvy$temp <- "Warm"
+warm_divvy$day_num <- c(5, 1, 6, 7, 4, 2, 3)
+
+
+temp_divvy <- rbind(cold_divvy, warm_divvy)
+temp_divvy <- temp_divvy[order(temp_divvy$day_num),]
+
+
+ggplot(data = temp_divvy, aes(x = day_num, y = perc, group = temp, col = temp)) + 
+  geom_path(lwd = 2) +
+  scale_color_manual(values = c("#1ac6ff", "#FFA500"), 
+                     name = "Temperature",
+                     labels = c("Cold (<60 \u00B0F)", "Warm (\u2265 60 \u00B0F)")) + 
+  scale_x_discrete(labels = c("Monday","Tuesday", "Wednesday", "Thursday", 
+                              "Friday", "Saturday", "Sunday")) +
+  scale_y_continuous(labels = percent) +
+  ylab("") + ggtitle("") my_theme 
+  
+  
 
 #######################################################
 # Describe Ridership #
@@ -203,7 +224,7 @@ ggplot(data = subscriber_data, aes(x = gender)) +
   geom_bar(aes(y = (..count..)/sum(..count..)), fill = c("#FFA500", "#1ac6ff")) + 
   scale_y_continuous(labels = percent) + 
   expand_limits(y = c(0, 1)) + 
-  ylab("Subscriber Makeup\n") + ggtitle("Subscriber Gender Distribution") + 
+  ylab("") + ggtitle("Subscriber Gender Distribution") + 
   my_theme
 
 ggplot(data = subscriber_data, aes(x = age, fill = gender)) + 
@@ -231,65 +252,12 @@ colnames(divvy_female_count) <- c("day", "gender", "count", "perc")
 divvy_gender_counts <- rbind(divvy_male_count, divvy_female_count)
 
 ggplot(data = divvy_gender_counts, aes(x = day, y = perc, col = gender)) + geom_path() + 
-  scale_x_date(date_breaks = "month", date_labels = "%B")
+  scale_x_date(date_breaks = "month", date_labels = "%B") + my_theme
   
-
-
 divvy_gender_counts$day_name <- wday(divvy_gender_counts$day)
 divvy_gender_counts_g <- group_by(divvy_gender_counts, gender, day_name)
 divvy_gender_counts_summ <- summarise(divvy_gender_counts_g, mean_perc = mean(perc))
+ggplot(data = divvy_gender_counts_summ, aes(x = day_name, y = mean_perc, fill = gender)) + 
+  geom_bar(stat = "identity")
 
 
-
-
-
-fdafs
-
-
-
-
-
-
-
-
-
-
-
-
-
-#### Monthly averages
-divvy_days_gender <- data.frame(day = format(subscriber_data$start_time, "%m/%y"), gender = subscriber_data$gender)
-divvy_days_gender_g <- group_by(divvy_days_gender, day, gender)
-divvy_days_gender_summ <- summarise(divvy_days_gender_g, count = n())
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-divvy_male <- filter(divvy_days_gender_summ , gender == "Male")
-divvy_female <- filter(divvy_days_gender_summ, gender == "Female")
-divvy_gender_join <- inner_join(divvy_male, divvy_female, by = c("day" = "day"))
-divvy_gender_join$male_perc <- divvy_gender_join$count.x / (divvy_gender_join$count.y + divvy_gender_join$count.x)
-divvy_gender_join$female_perc <- divvy_gender_join$count.y / (divvy_gender_join$count.x + divvy_gender_join$count.y)
-divvy_male_count <- divvy_gender_join[,c("day", "gender.x", "count.x", "male_perc")]
-divvy_female_count <- divvy_gender_join[,c("day", "gender.y", "count.y", "female_perc")]
-colnames(divvy_male_count) <- c("day", "gender", "count", "perc")
-colnames(divvy_female_count) <- c("day", "gender", "count", "perc")
-divvy_gender_counts <- rbind(divvy_male_count, divvy_female_count)
-
-divvy_gender_counts$month <- as.Date(as.character(divvy_gender_counts$day), "%m/%y")
-ggplot(data = divvy_gender_counts, aes(x = day, y = count, col = gender)) + geom_path()
